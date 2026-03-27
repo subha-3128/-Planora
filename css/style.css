@@ -1,0 +1,651 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ============ CUSTOM ANIMATIONS ============ */
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes riseIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.995);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* ============ GLOBAL STYLES ============ */
+
+* {
+    scroll-behavior: smooth;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.app-shell {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(100, 116, 139, 0.16), transparent 42%),
+        radial-gradient(circle at 90% 20%, rgba(71, 85, 105, 0.14), transparent 44%),
+        radial-gradient(circle at 40% 90%, rgba(148, 163, 184, 0.12), transparent 40%),
+        linear-gradient(150deg, #f8fafc 0%, #f1f5f9 35%, #f8fafc 100%);
+    overflow-x: hidden;
+    position: relative;
+}
+
+.dark .app-shell {
+    background:
+    radial-gradient(circle at 10% 10%, rgba(71, 85, 105, 0.2), transparent 45%),
+    radial-gradient(circle at 90% 20%, rgba(51, 65, 85, 0.18), transparent 45%),
+    radial-gradient(circle at 40% 90%, rgba(100, 116, 139, 0.14), transparent 45%),
+    linear-gradient(160deg, #0b1020 0%, #111827 45%, #0f172a 100%);
+}
+
+.bg-orb {
+    position: fixed;
+    border-radius: 999px;
+    filter: blur(40px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.orb-one {
+    width: 280px;
+    height: 280px;
+    top: -70px;
+    left: -80px;
+    background: #94a3b8;
+}
+
+.orb-two {
+    width: 320px;
+    height: 320px;
+    top: 20%;
+    right: -120px;
+    background: #64748b;
+}
+
+.orb-three {
+    width: 300px;
+    height: 300px;
+    bottom: -120px;
+    left: 30%;
+    background: #cbd5e1;
+}
+
+header,
+main,
+#toastContainer {
+    position: relative;
+    z-index: 1;
+}
+
+.glass-header {
+    background: rgba(255, 255, 255, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(12px);
+}
+
+.dark .glass-header {
+    background: rgba(15, 23, 42, 0.62) !important;
+    border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+.glass-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.44)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.dark .glass-card {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.42)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.28) !important;
+    box-shadow: 0 14px 35px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(148, 163, 184, 0.12);
+}
+
+.stat-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 38px rgba(30, 41, 59, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.glass-btn {
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.38)) !important;
+    color: #0f172a;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+}
+
+.dark .glass-btn {
+    border-color: rgba(148, 163, 184, 0.4) !important;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.55)) !important;
+    color: #e2e8f0;
+}
+
+.glass-btn-primary {
+    background: linear-gradient(140deg, rgba(51, 65, 85, 0.95), rgba(71, 85, 105, 0.92)) !important;
+    border-color: rgba(100, 116, 139, 0.55) !important;
+    color: #ffffff !important;
+}
+
+.glass-btn-warm {
+    background: linear-gradient(140deg, rgba(120, 113, 108, 0.92), rgba(87, 83, 78, 0.88)) !important;
+    border-color: rgba(120, 113, 108, 0.55) !important;
+    color: #ffffff !important;
+}
+
+.glass-day-btn {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.38));
+    backdrop-filter: blur(10px);
+}
+
+.dark .glass-day-btn {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.5));
+}
+
+.glass-day-btn:not(.active-day):hover {
+    transform: translateX(4px);
+}
+
+.glass-day-btn:focus-visible {
+    outline: 2px solid rgba(71, 85, 105, 0.75);
+    outline-offset: 2px;
+}
+
+.glass-task-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.36));
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.dark .glass-task-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.64), rgba(15, 23, 42, 0.52));
+    box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12), 0 8px 20px rgba(2, 6, 23, 0.25);
+}
+
+.task-done {
+    background: linear-gradient(140deg, rgba(134, 239, 172, 0.45), rgba(74, 222, 128, 0.3));
+}
+
+.dark .task-done {
+    background: linear-gradient(140deg, rgba(20, 83, 45, 0.5), rgba(22, 101, 52, 0.35));
+}
+
+.routine-task-shell {
+    position: relative;
+    overflow: hidden;
+}
+
+.routine-task-shell::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(71, 85, 105, 0.85), rgba(100, 116, 139, 0.8));
+    opacity: 0.8;
+}
+
+.task-leading {
+    min-width: 18px;
+}
+
+.task-index {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #475569, #64748b);
+    box-shadow: 0 4px 10px rgba(71, 85, 105, 0.35);
+}
+
+.task-rail {
+    width: 2px;
+    flex: 1;
+    min-height: 38px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.45), rgba(148, 163, 184, 0.08));
+}
+
+.routine-task-shell:last-child .task-rail {
+    opacity: 0;
+}
+
+.task-main {
+    width: 100%;
+}
+
+.task-meta {
+    row-gap: 6px;
+}
+
+.task-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.task-chip-time {
+    color: #334155;
+    background: rgba(255, 255, 255, 0.78);
+}
+
+.task-chip-category {
+    color: #475569;
+    background: rgba(226, 232, 240, 0.8);
+    border-color: rgba(148, 163, 184, 0.6);
+}
+
+.task-status {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 4px 9px;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+}
+
+.task-status-live {
+    color: #334155;
+    background: rgba(226, 232, 240, 0.85);
+    border-color: rgba(148, 163, 184, 0.6);
+}
+
+.task-status-done {
+    color: #166534;
+    background: rgba(220, 252, 231, 0.78);
+    border-color: rgba(134, 239, 172, 0.65);
+}
+
+.dark .task-chip-time {
+    color: #e2e8f0;
+    background: rgba(30, 41, 59, 0.72);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+.dark .task-chip-category {
+    color: #cbd5e1;
+    background: rgba(51, 65, 85, 0.45);
+    border-color: rgba(148, 163, 184, 0.45);
+}
+
+.dark .task-status-live {
+    color: #cbd5e1;
+    background: rgba(51, 65, 85, 0.45);
+    border-color: rgba(148, 163, 184, 0.45);
+}
+
+.dark .task-status-done {
+    color: #bbf7d0;
+    background: rgba(20, 83, 45, 0.45);
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.task-done::before {
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.85), rgba(16, 185, 129, 0.75));
+}
+
+.routine-task-shell:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 14px 24px rgba(15, 23, 42, 0.12);
+}
+
+.dark .routine-task-shell:hover {
+    box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12), 0 14px 28px rgba(2, 6, 23, 0.35);
+}
+
+.content-swap-in {
+    animation: fadeIn 0.22s ease both;
+}
+
+.content-swap-out {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.glass-mini {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.32));
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.dark .glass-mini {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.52), rgba(15, 23, 42, 0.44));
+    border-color: rgba(148, 163, 184, 0.35);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.26);
+}
+
+.filter-pill {
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #334155;
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.dark .filter-pill {
+    color: #cbd5e1;
+    background: rgba(30, 41, 59, 0.72);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+.filter-pill-active {
+    color: #ffffff !important;
+    border-color: rgba(79, 70, 229, 0.6) !important;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.95), rgba(14, 165, 233, 0.92)) !important;
+    box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+}
+
+/* ============ SCROLLBAR STYLING ============ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.6);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.7);
+}
+
+/* ============ CARD & CONTAINER STYLES ============ */
+
+.card-shadow {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.card-shadow:hover {
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* ============ GRADIENT BACKGROUNDS ============ */
+
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* ============ INPUT STYLES ============ */
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #9ca3af;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: white;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.dark input[type="checkbox"] {
+    background-color: #1f2937;
+    border-color: #4b5563;
+}
+
+input[type="checkbox"]:hover {
+    border-color: #6366f1;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+input[type="checkbox"]:checked {
+    background-color: #6366f1;
+    border-color: #6366f1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 14px;
+}
+
+/* ============ BUTTON STYLES ============ */
+
+button {
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* ============ RESPONSIVE ADJUSTMENTS ============ */
+
+@media (max-width: 768px) {
+    header {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 24px;
+        padding-bottom: 80px;
+    }
+
+    .orb-one,
+    .orb-two,
+    .orb-three {
+        filter: blur(50px);
+        opacity: 0.45;
+    }
+
+    #timetableContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .card-shadow {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+}
+
+@media (max-width: 480px) {
+    #installBtn {
+        display: none !important;
+    }
+
+    .flex.justify-between {
+        gap: 8px;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(14px);
+    }
+}
+
+/* ============ ANIMATION CLASSES ============ */
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+[data-reveal] {
+    will-change: transform, opacity;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============ TOUCH IMPROVEMENTS ============ */
+
+@media (hover: none) and (pointer: coarse) {
+    button, 
+    input[type="checkbox"],
+    .cursor-pointer {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* ============ FOCUS STYLES ============ */
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* ============ PRINT STYLES ============ */
+
+@media print {
+    header,
+    #resetBtn,
+    #darkModeToggle,
+    #installBtn,
+    #toastContainer {
+        display: none;
+    }
+
+    body {
+        background: white;
+    }
+
+    .dark {
+        background: white;
+        color: black;
+    }
+}
+
+/* ============ HIGH CONTRAST MODE ============ */
+
+@media (prefers-contrast: more) {
+    button {
+        border: 2px solid currentColor;
+    }
+
+    input[type="checkbox"] {
+        border-width: 3px;
+    }
+}
+
+/* ============ REDUCED MOTION ============ */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

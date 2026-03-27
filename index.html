@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="A modern PWA for managing your weekly timetable and productivity">
+    
+    <title>Planora - Your Productivity Companion</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%236366f1' width='180' height='180'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>⏰</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%236366f1' width='180' height='180'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>⏰</text></svg>">
+</head>
+<body class="app-shell text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div class="bg-orb orb-one" aria-hidden="true"></div>
+    <div class="bg-orb orb-two" aria-hidden="true"></div>
+    <div class="bg-orb orb-three" aria-hidden="true"></div>
+    
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 glass-header border-b border-gray-200 dark:border-gray-800 shadow-sm backdrop-blur-md bg-opacity-95 dark:bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-3xl">⏰</div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-slate-700 to-sky-700 bg-clip-text text-transparent">Planora</h1>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button id="resetBtn" class="glass-btn glass-btn-warm px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 hover:scale-105 transform" title="Reset all tasks for this week">
+                        ↺ Reset Week
+                    </button>
+                    
+                    <button id="darkModeToggle" class="glass-btn p-2 rounded-lg transition-colors duration-200" title="Toggle dark mode">
+                        <span class="text-xl">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Stats Section -->
+        <div class="md:hidden mb-4">
+            <button id="statsToggleBtn" class="w-full glass-card px-4 py-3 rounded-xl text-left font-semibold text-gray-800 dark:text-gray-100 shadow-sm">
+                ▼ Weekly Stats
+            </button>
+        </div>
+
+        <div id="statsSection" data-reveal class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <div class="glass-card stat-card rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Weekly Progress</p>
+                <p class="text-3xl font-bold text-indigo-600" id="weeklyProgress">0%</p>
+                <div class="mt-3 w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2">
+                    <div id="weeklyProgressBar" class="bg-gradient-to-r from-slate-600 to-sky-700 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="glass-card stat-card rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Tasks Completed</p>
+                <p class="text-3xl font-bold text-green-600" id="tasksCompleted">0/0</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Across all days</p>
+            </div>
+            
+            <div class="glass-card stat-card rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Current Streak</p>
+                <p class="text-3xl font-bold text-orange-600" id="streak">0 days 🔥</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Keep it going!</p>
+            </div>
+        </div>
+
+        <!-- Days List and Routine View -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Sidebar: Days List -->
+            <div class="lg:col-span-1">
+                <div id="daysPanel" data-reveal class="glass-card rounded-2xl p-4 shadow-sm sticky top-24">
+                    <h2 class="text-lg font-bold mb-1 text-gray-900 dark:text-white">📅 All Days</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Use Left/Right arrow keys to switch day quickly</p>
+                    <div id="daysList" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- Days will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Routine View -->
+            <div class="lg:col-span-3">
+                <div id="routineView" data-reveal class="glass-card rounded-2xl shadow-sm overflow-hidden">
+                    <div id="routineContent" class="p-6 content-swap-in">
+                        <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                            <p class="text-lg">👈 Select a day from the list to view its routine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Toggle View Button for Mobile -->
+        <div class="lg:hidden fixed bottom-6 left-6 flex gap-3 z-40">
+            <button id="toggleDaysView" class="glass-btn glass-btn-primary px-4 py-2 text-white rounded-lg transition-colors duration-200 shadow-lg">
+                📅 Days List
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 space-y-3 pointer-events-none"></div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('js/sw.js')
+                .then(reg => console.log('✓ Service Worker registered'))
+                .catch(err => console.log('✗ Service Worker registration failed:', err));
+        }
+        
+        // PWA Installation
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+            }
+        });
+        
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response: ${outcome}`);
+                    deferredPrompt = null;
+                    installBtn.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -106,12 +106,10 @@ function renderRoutineView(dayId) {
                 <p class="font-semibold text-gray-800 dark:text-gray-100 mt-1">${nextTask ? `${nextTask.time} • ${nextTask.activity}` : 'No fixed-time task left'}</p>
             </div>
             <div class="glass-mini rounded-xl p-3">
-                <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Completed</p>
-                <p class="font-semibold text-gray-800 dark:text-gray-100 mt-1">${completedCount} tasks</p>
+                <p class="font-semibold text-gray-800 dark:text-gray-100">${completedCount} tasks</p>
             </div>
             <div class="glass-mini rounded-xl p-3">
-                <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Pending</p>
-                <p class="font-semibold text-gray-800 dark:text-gray-100 mt-1">${pendingCount} tasks</p>
+                <p class="font-semibold text-gray-800 dark:text-gray-100">${pendingCount} tasks</p>
             </div>
         </div>
 

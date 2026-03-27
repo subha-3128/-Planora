@@ -4,6 +4,12 @@ const appState = {
     theme: localStorage.getItem('theme') || 'light',
     selectedDayId: JSON.parse(localStorage.getItem('selectedDayId') || '1'),
     lastProgressPercent: 0,
+    notificationsEnabled: localStorage.getItem('notificationsEnabled') === 'true' || false,
+    notify5min: localStorage.getItem('notify5min') === 'true' || false,
+    notifyOnTime: localStorage.getItem('notifyOnTime') === 'true' || false,
+    notifyCelebration: localStorage.getItem('notifyCelebration') === 'true' || false,
+    touchStartX: 0,
+    touchEndX: 0,
 };
 
 // Initialize app
@@ -18,6 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     runEntryAnimations();
     showOneTimeTip();
     setupAutoUpdate();
+    setupNotificationSystem();
+    setupSettingsModal();
+    setupMobileNavigation();
+    setupSwipeNavigation();
 });
 
 // ============ THEME MANAGEMENT ============
@@ -253,8 +263,10 @@ function handleTaskToggle(dayId, taskId, isChecked) {
     updateStats();
 
     if (isChecked) {
+        showCelebration();
         showToast('✓ Task completed!', 'success');
         playSound();
+        sendNotification('Task Completed! 🎉', `Great job! Keep up the momentum!`);
     }
 }
 
@@ -502,4 +514,265 @@ function showOneTimeTip() {
 
     showToast('Tip: Use Left and Right arrow keys to switch days', 'info');
     localStorage.setItem(key, '1');
+}
+
+// ============ NOTIFICATION SYSTEM ============
+
+function setupNotificationSystem() {
+    const notificationsToggle = document.getElementById('notificationsToggle');
+    const notify5min = document.getElementById('notify5min');
+    const notifyOnTime = document.getElementById('notifyOnTime');
+    const notifyCelebration = document.getElementById('notifyCelebration');
+    const requestNotificationBtn = document.getElementById('requestNotificationBtn');
+    const notificationOptions = document.getElementById('notificationOptions');
+
+    // Load saved preferences
+    notificationsToggle.checked = appState.notificationsEnabled;
+    notify5min.checked = appState.notify5min;
+    notifyOnTime.checked = appState.notifyOnTime;
+    notifyCelebration.checked = appState.notifyCelebration;
+
+    // Toggle options visibility
+    notificationsToggle.addEventListener('change', (e) => {
+        appState.notificationsEnabled = e.target.checked;
+        localStorage.setItem('notificationsEnabled', appState.notificationsEnabled);
+        notificationOptions.classList.toggle('hidden', !e.target.checked);
+        
+        if (e.target.checked && Notification.permission === 'default') {
+            requestNotificationBtn.classList.remove('hidden');
+        } else {
+            requestNotificationBtn.classList.add('hidden');
+        }
+    });
+
+    notify5min.addEventListener('change', (e) => {
+        appState.notify5min = e.target.checked;
+        localStorage.setItem('notify5min', appState.notify5min);
+    });
+
+    notifyOnTime.addEventListener('change', (e) => {
+        appState.notifyOnTime = e.target.checked;
+        localStorage.setItem('notifyOnTime', appState.notifyOnTime);
+    });
+
+    notifyCelebration.addEventListener('change', (e) => {
+        appState.notifyCelebration = e.target.checked;
+        localStorage.setItem('notifyCelebration', appState.notifyCelebration);
+    });
+
+    // Request notification permission
+    requestNotificationBtn.addEventListener('click', () => {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    requestNotificationBtn.classList.add('hidden');
+                    showToast('🔔 Notifications enabled!', 'success');
+                }
+            });
+        }
+    });
+
+    // Check if notification permission needed
+    if ('Notification' in window && Notification.permission === 'default' && appState.notificationsEnabled) {
+        requestNotificationBtn.classList.remove('hidden');
+    }
+
+    // Start notification checker
+    setupNotificationChecker();
+}
+
+function setupNotificationChecker() {
+    // Check every minute for notifications
+    setInterval(() => {
+        if (!appState.notificationsEnabled) return;
+
+        const day = TIMETABLE_DATA.find(d => d.id === appState.selectedDayId);
+        if (!day) return;
+
+        const now = new Date();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+        day.tasks.forEach(task => {
+            const taskMinutes = parseStartTimeToMinutes(task.time);
+            if (taskMinutes === null) return;
+
+            // 5 minutes before notification
+            if (appState.notify5min && taskMinutes - nowMinutes === 5) {
+                sendNotification(`⏰ Upcoming: ${task.activity}`, `Starting in 5 minutes at ${task.time}`);
+            }
+
+            // On time notification
+            if (appState.notifyOnTime && taskMinutes === nowMinutes) {
+                sendNotification(`🎯 Time for ${task.activity}!`, `It's ${task.time} - Time to start!`);
+            }
+        });
+    }, 60000); // Check every minute
+}
+
+function sendNotification(title, options = {}) {
+    if (!appState.notificationsEnabled || !('Notification' in window)) return;
+
+    if (Notification.permission !== 'granted') return;
+
+    try {
+        new Notification(title, {
+            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect fill="%236366f1" width="180" height="180"/><text x="50%" y="50%" font-size="90" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">⏰</text></svg>',
+            badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect fill="%236366f1" width="180" height="180"/><text x="50%" y="50%" font-size="90" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">⏰</text></svg>',
+            ...options
+        });
+    } catch (e) {
+        console.log('Notification sent:', title);
+    }
+}
+
+function showCelebration() {
+    if (!appState.notifyCelebration) return;
+
+    const taskDiv = document.querySelector('.routine-task-shell:has(input[type="checkbox"]:checked)');
+    if (taskDiv) {
+        taskDiv.classList.add('task-celebration');
+        setTimeout(() => taskDiv.classList.remove('task-celebration'), 600);
+    }
+
+    // Create confetti particles
+    const emojis = ['🎉', '✨', '🌟', '⭐', '🎊', '👏'];
+    for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+        particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = '50vh';
+        particle.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        document.body.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 800);
+    }
+}
+
+// ============ SETTINGS MODAL ============
+
+function setupSettingsModal() {
+    const settingsBtn = document.getElementById('settingsBtn');
+    const mobileSettingsBtn = document.getElementById('mobileSettingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    const clearDataBtn = document.getElementById('clearDataBtn');
+
+    function openSettings() {
+        settingsModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSettings() {
+        settingsModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    settingsBtn?.addEventListener('click', openSettings);
+    mobileSettingsBtn?.addEventListener('click', openSettings);
+    closeSettingsBtn.addEventListener('click', closeSettings);
+
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            closeSettings();
+        }
+    });
+
+    // Export data
+    exportDataBtn.addEventListener('click', () => {
+        const data = {
+            completedTasks: appState.completedTasks,
+            theme: appState.theme,
+            timestamp: new Date().toISOString()
+        };
+
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `planora-backup-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        showToast('📥 Data exported successfully!', 'success');
+        closeSettings();
+    });
+
+    // Clear data
+    clearDataBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+            appState.completedTasks = {};
+            localStorage.clear();
+            window.location.reload();
+        }
+    });
+}
+
+// ============ MOBILE NAVIGATION ============
+
+function setupMobileNavigation() {
+    const mobileStatsBtn = document.getElementById('mobileStatsBtn');
+    const mobileDaysBtn = document.getElementById('mobileDaysBtn');
+    const statsSection = document.getElementById('statsSection');
+    const daysPanel = document.getElementById('daysPanel');
+
+    mobileStatsBtn?.addEventListener('click', () => {
+        updateMobileNav('stats');
+        statsSection?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    mobileDaysBtn?.addEventListener('click', () => {
+        updateMobileNav('days');
+        daysPanel?.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+function updateMobileNav(active) {
+    const items = document.querySelectorAll('.mobile-nav-item');
+    items.forEach(item => item.classList.remove('active'));
+
+    if (active === 'stats') {
+        document.getElementById('mobileStatsBtn')?.classList.add('active');
+    } else if (active === 'days') {
+        document.getElementById('mobileDaysBtn')?.classList.add('active');
+    }
+}
+
+// ============ SWIPE NAVIGATION ============
+
+function setupSwipeNavigation() {
+    const routineView = document.getElementById('routineView');
+    
+    routineView?.addEventListener('touchstart', (e) => {
+        appState.touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    routineView?.addEventListener('touchend', (e) => {
+        appState.touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+}
+
+function handleSwipe() {
+    const diff = appState.touchStartX - appState.touchEndX;
+    const threshold = 50;
+
+    if (Math.abs(diff) < threshold) return;
+
+    const currentIndex = TIMETABLE_DATA.findIndex(d => d.id === appState.selectedDayId);
+    let nextIndex = currentIndex;
+
+    if (diff > threshold) {
+        // Swiped left - next day
+        nextIndex = (currentIndex + 1) % TIMETABLE_DATA.length;
+    } else if (diff < -threshold) {
+        // Swiped right - previous day
+        nextIndex = (currentIndex - 1 + TIMETABLE_DATA.length) % TIMETABLE_DATA.length;
+    }
+
+    if (nextIndex !== currentIndex) {
+        selectDay(TIMETABLE_DATA[nextIndex].id, true);
+    }
 }

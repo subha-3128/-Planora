@@ -43,6 +43,10 @@
                         ↺ Reset Week
                     </button>
                     
+                    <button id="settingsBtn" class="glass-btn-dark-toggle px-2.5 py-2 rounded-lg transition-all duration-300 hidden sm:block" title="Open settings">
+                        <span class="text-lg">⚙️</span>
+                    </button>
+                    
                     <button id="darkModeToggle" class="glass-btn-dark-toggle px-2.5 py-2 rounded-lg transition-all duration-300" title="Toggle dark mode">
                         <span class="text-lg">🌙</span>
                     </button>
@@ -110,14 +114,79 @@
 
         </div>
 
-        <!-- Toggle View Button for Mobile -->
-        <div class="lg:hidden fixed bottom-6 left-6 flex gap-3 z-40">
-            <button id="toggleDaysView" class="glass-btn glass-btn-primary px-4 py-2 text-white rounded-lg transition-colors duration-200 shadow-lg">
-                📅 Days List
-            </button>
+        <!-- Mobile Bottom Navigation Bar -->
+        <div class="mobile-nav-bar">
+            <div class="mobile-nav-item" id="mobileStatsBtn" title="Weekly Stats">
+                <span class="mobile-nav-icon">📊</span>
+                <span>Stats</span>
+            </div>
+            <div class="mobile-nav-item active" id="mobileDaysBtn" title="Days List">
+                <span class="mobile-nav-icon">📅</span>
+                <span>Days</span>
+            </div>
+            <div class="mobile-nav-item" id="mobileSettingsBtn" title="Settings">
+                <span class="mobile-nav-icon">⚙️</span>
+                <span>Settings</span>
+            </div>
+            <div class="mobile-nav-item" id="mobileInfoBtn" title="About">
+                <span class="mobile-nav-icon">ℹ️</span>
+                <span>About</span>
+            </div>
         </div>
 
     </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center">
+        <div class="bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-2xl w-full sm:w-full sm:max-w-md p-6 shadow-2xl animation-slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">⚙️ Settings</h2>
+                <button id="closeSettingsBtn" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">✕</button>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="space-y-4">
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-4">🔔 Notifications</h3>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="text-gray-700 dark:text-gray-300">Enable Notifications</label>
+                        <input type="checkbox" id="notificationsToggle" class="w-5 h-5">
+                    </div>
+
+                    <div id="notificationOptions" class="space-y-3 pl-2 hidden">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600 dark:text-gray-400">5 minutes before task</label>
+                            <input type="checkbox" id="notify5min" class="w-4 h-4">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600 dark:text-gray-400">At task time</label>
+                            <input type="checkbox" id="notifyOnTime" class="w-4 h-4">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600 dark:text-gray-400">Task completion celebration</label>
+                            <input type="checkbox" id="notifyCelebration" class="w-4 h-4">
+                        </div>
+                    </div>
+
+                    <button id="requestNotificationBtn" class="w-full mt-4 glass-btn glass-btn-primary text-white px-4 py-2 rounded-lg font-medium hidden">
+                        Enable Browser Notifications
+                    </button>
+                </div>
+
+                <!-- Other Settings -->
+                <div class="pt-4">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-4">💾 Data</h3>
+                    <button id="exportDataBtn" class="w-full glass-btn px-4 py-2 rounded-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                        📥 Export Data
+                    </button>
+                    <button id="clearDataBtn" class="w-full glass-btn px-4 py-2 rounded-lg font-medium text-red-600 dark:text-red-400">
+                        🗑️ Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed bottom-6 right-6 space-y-3 pointer-events-none"></div>
